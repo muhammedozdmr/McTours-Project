@@ -1,0 +1,148 @@
+﻿@model VehicleDefinitionDto
+<h1>Araç Özellik Ekleme</h1>
+<div action="row">
+    <div class="col-12 col-sm-10 col-md-8 col-lg-6">
+        @if (TempData.ContainsKey("SuccessMessage"))
+        {
+            <div class="alert alert-success">
+                @TempData["SuccessMessage"]
+            </div>
+        }
+        @if (TempData.ContainsKey("ErrorMessage"))
+        {
+            @MessageHelper.DisplayError((string)TempData["ErrorMessage"])
+            ;
+        }
+        <form asp-controller="VehicleDefinitions" asp-action="Create" method="post">
+            @* <div class="mb-3">
+            <label for="vehicle_make" class="form-label">Marka Adı:</label>
+            <select id="vehicle_make" class="form-select">
+            <option value="">.::Lütfen Seçiniz::.</option>
+            @foreach (VehicleMakeDto vehicleMake in ViewBag.VehicleMakes)
+            {
+            <option value="@vehicleMake.Id">@vehicleMake.Name</option>
+            }
+            </select>
+            </div>*@
+            <div class="mb-3">
+                <label asp-for="VehicleMakeId" class="form-label">Marka Adı:</label>
+                <select asp-for="VehicleMakeId" asp-items="ViewBag.VehicleMakeSelectList" class="form-select">
+                    <option value="">.:: Lütfen Seçiniz ::..</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                @*<label for="name" class="form-label">Model Adı:</label>*@
+                @*asp-items selectList tipinde bekliyor.*@
+                @*<select asp-for="VehicleModelId" asp-items="ViewBag.VehicleModels" id="vehicleModelList" class="form-select">
+                <option value="">.:: Lütfen Seçiniz ::..</option>
+                </select>*@
+                <label asp-for="VehicleModelId" class="form-label">Model Adı:</label>
+                <select asp-for="VehicleModelId" asp-items="ViewBag.VehicleModelSelectList" class="form-select">
+                    <option value="">.:: Lütfen Seçiniz ::..</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label for="name" class="form-label">Araç Yılı:</label>
+                <select id="vehicle_model_year_id" name="year" class="form-select">
+                    <option value="">.:: Lütfen Seçiniz ::.</option>
+                    @foreach (ValueNameObject vehicleDefinitionYear in ViewBag.Year)
+                    {
+                        if (Model?.Year == vehicleDefinitionYear.Value)
+                        {
+                            <option value="@vehicleDefinitionYear.Value" selected>@vehicleDefinitionYear.Name</option>
+                        }
+                        else
+                        {
+                            <option value="@vehicleDefinitionYear.Value">@vehicleDefinitionYear.Name</option>
+                        }
+                    }
+                </select>
+            </div>
+            <div class="mb-3">
+                <div>
+                    <label for="name" class="form-label">Yakıt Tipi:</label>
+                </div>
+                @foreach (ValueNameObject obj in ViewBag.FuelTypes)
+                {
+                    <input type="radio" id="fuel_type_@obj.Value" name="fuelType" value="@obj.Value" />
+                    <label for="fuel_type_@obj.Value">@obj.Name</label>
+                }
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Koltuk Sırası</label>
+                <br />
+                <input type="radio" itemid="line-10" name="lineCount" value="10" />
+                <label for="line-10">10</label>
+                <input type="radio" itemid="line-11" name="lineCount" value="11" />
+                <label for="line-11">11</label>
+                <input type="radio" itemid="line-12" name="lineCount" value="12" />
+                <label for="line-12">12</label>
+            </div>
+            <div class="mb-3">
+                <label for="name" class="form-label">Koltuk Tipi:</label>
+                @foreach (ValueNameObject obj in ViewBag.SeatingTypes)
+                {
+                    <div>
+                        <input type="radio" id="seating_type_@obj.Value" name="seatingType" value="@obj.Value" />
+                        <label for="seating_type_@obj.Value">@obj.Name</label>
+                    </div>
+                }
+            </div>
+            <div class="mb-3">
+                <div>
+                    <label>Özellikler</label>
+                </div>
+                @foreach (ValueNameObject obj in ViewBag.Utilities)
+                {
+                    @*checkbox radio button küçük diye isimlerine tıklandığında da seçili olsun diye id ekliyoruz ve unique yapmış oluyoruz*@
+
+                    <input type="checkbox" id="utility_@obj.Value" name="utilities" value="@obj.Value" />
+                    <label for="utility_@obj.Value">@obj.Name</label>
+
+                }
+            </div>
+            <div class="mb-12">
+                <div class="text-end">
+                    <a class="btn btn-outline-warning" asp-action="Index">İptal</a>
+                    <button class="btn btn-outline-success">
+                        Kaydet
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts
+    {
+    <script>
+        @*document.getElementById('vehicle_make').addEventListener('change',function(){
+
+        });*@
+            $('#VehicleMakeId').change(function () {
+                let vehicleMakeId = this.value;
+                console.log(vehicleMakeId);
+                //document.getElementById('VehicleModelId').innerHTML = '';
+                $('#VehicleModelId').html('');
+                $.ajax({
+                    type: 'get',
+        @*makeId burada controller tarafındaki metoda giden parametre ismi ile aynı çünkü programcsdeki pattern Id olarak aldığındna dolayı eğer ? ile belirtmezsem Id ile
+                eşleştirmeye çalışır ve hata alır yoksa giden paremetreyi de Id olarak alsadım direkt /VehicleModels/GetByMakeId/${vehicleMakeId} yazabilirdim*@
+                    url: `/VehicleModels/GetByMakeId?makeId=${vehicleMakeId}`,
+                    dataType: 'json',
+                    success: function (vehicleModels) {
+                        console.log(vehicleModels);
+                        if (vehicleModels.length) {
+                            let defaultOption = $('<option>').attr('value', '').text('.:: Lütfen Seçiniz ::.');
+                            $('#VehicleModelId').append(defaultOption);
+                        }
+                        for (let i = 0; i < vehicleModels.length; i++) {
+                            //let optionElement = $(`<option value="${vehicleModels[i].id}">${vehicleModels[i].name}</option>`)
+                            let optionElement = $('<option>').attr('value', vehicleModels[i].id).text(vehicleModels[i].name);
+                            $('#VehicleModelId').append(optionElement);
+                        }
+                    }
+                  });
+              });
+    </script>
+}

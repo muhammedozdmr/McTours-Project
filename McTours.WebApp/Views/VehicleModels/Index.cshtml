@@ -1,0 +1,72 @@
+﻿@model IEnumerable<VehicleModelSummary>
+<h1>Tüm Modeller</h1>
+
+<div class="row">
+    <div class="col-12 col-sm-10 col-md-8">
+        @if (TempData.ContainsKey("SuccessMessage"))
+        {
+            @*@MessageHelper.DisplaySuccess((string)TempData[Keys.SuccessMessage]);*@
+            @*@MessageHelper.DisplaySuccess(TempData.GetString(Keys.SuccessMessage));*@
+            @MessageHelper.DisplaySuccess(TempData.GetSuccessMessage());
+        }
+        @if (TempData["ErrorMessage"] != null)
+        {
+            @*@MessageHelper.DisplayError((string)TempData[Keys.ErrorMessage]);*@
+            @MessageHelper.DisplayError(TempData.GetErrorMessage());
+        }
+        <div class="float-end">
+            <a class="btn btn-outline-primary btn-sm" asp-controller="VehicleModels" asp-action="Create">Yeni Ekle</a>
+        </div>
+
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Marka Adı</th>
+                    <th>Model Adı</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var vehicleModel in Model)
+                {
+                    <tr>
+                        <td>@vehicleModel.Id</td>
+                        <td>@vehicleModel.VehicleMakeName</td>
+                        <td>@vehicleModel.Name</td>
+                        <td class="text-end">
+                            <a class="btn btn-outline-primary btn-sm" asp-controller="VehicleModels" asp-action="Update" asp-route-id=@vehicleModel.Id>Düzenle</a>
+                            @*javascript ile browser messageboxı çıkartmak için Sil butonunu <a> elementinden çıkartıyorum çünkü başka biyere göndermiycem*@
+                            @*
+                        <a class="btn btn-outline-warning btn-sm" asp-controller="VehicleModels" asp-action="Delete" asp-route-id=@vehicleModel.Id>Sil</a>
+                        bu şekilde sil butonlarını form elementi olarak ayarlarız fakat hidden yaptığımız için görünmez d-inline ile sil butonlarını yani form elementlerini
+                        güncellenin yanına alırız. yine class ismi delete-form yaparak scripte yönlendiririz
+                        *@
+                            <form asp-action="Delete" method="post" class="delete-form d-inline-block">
+                                <input type="hidden" value="@vehicleModel.Id" name="id">
+                                <button class="btn btn-outline-warning btn-sm">Sil</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@*
+    section demek _layoutta razor bloğunu yazdığımız RenderBody gibi scriptler için olan RenderSection metodu ile o alana yazarız
+    section yanındaki Scripts ise Rendersectiondaki ilk parametre ile aynı olmak zorunda
+*@
+@section Scripts{
+    <script>
+        let deleteForms = document.getElementsByClassName('delete-form');
+        for (let i = 0; i < deleteForms.length; i++) {
+            deleteForms[i].addEventListener('submit', function (e) {
+                let isConfirmed = confirm('Dikkat !! Bu kayıt silinecek. Devam etmek istiyor musunuz ?');
+                if (!isConfirmed) {
+                    e.preventDefault();
+                }
+            });
+        }
+    </script>
+}

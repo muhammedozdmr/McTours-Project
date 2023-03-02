@@ -1,0 +1,124 @@
+﻿@model VehicleDefinitionDto
+<h1>Araç Model Özellikleri Güncelleme</h1>
+<div action="row">
+    <div class="col-12 col-sm-10 col-md-8 col-lg-6">
+        @if (TempData.ContainsKey("SuccessMessage"))
+        {
+            <div class="alert alert-success">
+                @TempData["SuccessMessage"]
+            </div>
+        }
+       @if (ViewData.ContainsKey("ErrorMessage"))
+        {
+            @MessageHelper.DisplayError((string)ViewData["ErrorMessage"]);
+        }
+        <form asp-controller="VehicleDefinitions" asp-action="Update" method="post">
+               <div class="mb-3">
+                <label asp-for="VehicleMakeId" class="form-label">Marka Adı:</label>
+                <select asp-for="VehicleMakeId" asp-items="ViewBag.VehicleMakeSelectList" class="form-select">
+                    <option value="">.:: Lütfen Seçiniz ::..</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label asp-for="VehicleModelId" class="form-label">Model Adı:</label>
+                <select asp-for="VehicleModelId" asp-items="ViewBag.VehicleModelSelectList" class="form-select">
+                    <option value="">.:: Lütfen Seçiniz ::..</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label for="vehicle_model_year_id" class="form-label">Araç Yılı:</label>
+                <select id="vehicle_model_year_id" name="year" class="form-select">
+                    <option value="">.:: Lütfen Seçiniz ::..</option>
+                    @foreach (ValueNameObject vehicleDefinitionYear in ViewBag.Year)
+                    {
+                        if (Model?.Year == vehicleDefinitionYear.Value)
+                        {
+                            <option value="@vehicleDefinitionYear.Value" selected>@vehicleDefinitionYear.Name</option>
+                        }
+                        else
+                        {
+                            <option value="@vehicleDefinitionYear.Value">@vehicleDefinitionYear.Name</option>
+                        }
+                    }
+                </select>
+            </div>
+            <div class="mb-3">
+                <div>
+                    <label for="name" class="form-label">Yakıt Tipi:</label>
+                </div>
+                @foreach (ValueNameObject obj in ViewBag.FuelTypes)
+                {
+
+                    <input type="radio" id="fuel_type_@obj.Value" name="fuelType" value="@obj.Value" @((int)Model.FuelType == obj.Value ? "checked" : string.Empty) />
+                    <label for="fuel_type_@obj.Value">@obj.Name</label>
+
+                }
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Koltuk Sırası</label>
+                <br />
+                <input type="radio" itemid="line-10" name="lineCount" value="10" @((int)Model.LineCount == 10 ? "checked" : string.Empty) />
+                <label for="line-10">10</label>
+                <input type="radio" itemid="line-11" name="lineCount" value="11" @((int)Model.LineCount == 11 ? "checked" : string.Empty) />
+                <label for="line-11">11</label>
+                <input type="radio" itemid="line-12" name="lineCount" value="12" @((int)Model.LineCount == 12 ? "checked" : string.Empty) />
+                <label for="line-12">12</label>   
+            </div>
+            <div class="mb-3">
+                <label for="name" class="form-label">Koltuk Tipi:</label>
+                @foreach (ValueNameObject obj in ViewBag.SeatingTypes)
+                {
+                    <div>
+                        <input type="radio" id="seating_type_@obj.Value" name="seatingType" value="@obj.Value" @((int)Model.SeatingType == obj.Value ? "checked" : string.Empty) />
+                        <label for="seating_type_@obj.Value">@obj.Name</label>
+                    </div>
+                }
+            </div>
+            <div class="mb-3">
+                <div>
+                    <label for="name" class="form-label">Özellikler</label>
+                </div>
+                @foreach (ValueNameObject obj in ViewBag.Utilities)
+                {
+                    <input type="checkbox" id="utility_@obj.Value" name="utilities" value="@obj.Value" @(Model.Utilities.Contains((Utility)obj.Value) ? "checked" : string.Empty) />
+                    <label for="utility_@obj.Value">@obj.Name</label>
+                }
+            </div>
+            <div class="mb-3">
+                <div class="text-end">
+                    <a class="btn btn-outline-warning" asp-action="Index">İptal</a>
+                    <button class="btn btn-outline-success">
+                        Güncelle
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts{
+    <script>
+        $('#VehicleMakeId').change(function(){
+            let vehicleMakeId = this.value;
+            console.log(vehicleMakeId);
+            $('#VehicleModelId').html('');
+            $.ajax({
+                type: 'get',
+                url: `/VehicleModels/GetByMakeId?makeId=${vehicleMakeId}`,
+                dataType:'json',
+                success: function(vehicleModels){
+                    if(vehicleModels.length){
+                        let defaultOption = $('<option>').attr('value', '').text('.:: Lütfen Seçiniz ::..');
+                        $('#VehicleModelId').append(defaultOption);
+                    }
+                    for(let i = 0; i<vehicleModels.length;i++){
+                        let optionElement = $('<option>').attr('value',vehicleModels[i].id)
+                        .text(vehicleModels[i].name);
+
+                        $('#VehicleModelId').append(optionElement);
+                    }
+                }
+            })
+        })
+    </script>
+}

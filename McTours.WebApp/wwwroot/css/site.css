@@ -1,0 +1,69 @@
+html {
+    font-size: 14px;
+}
+
+@media (min-width: 768px) {
+    html {
+        font-size: 16px;
+    }
+}
+
+html {
+    position: relative;
+    min-height: 100%;
+}
+
+body {
+    margin-bottom: 60px;
+}
+
+.table tbody tr:hover {
+    background-color: #bebebe;
+    color: #FFFFFF;
+    cursor: pointer;
+}
+
+/*böyle yapýlabilir css kendimiz sýnýf oluþturup class içerisine kendi sýnýfýmýzý yazarýz*/
+/*a.muhammedbutton:hover{
+    color: darkgreen;
+    font-weight:bold;
+    cursor:pointer;
+}*/
+
+.form-label {
+    font-size: larger;
+}
+
+.bus-seat {
+    width: 35px;
+    height: 35px;
+    border: 1px solid gray;
+    display: inline-block;
+    margin: 1px;
+    font-size: 16px;
+}
+
+/*media browser geniþliði demektir minimum bu boyutta olduðu zaman bu kurallar geçerli olsun demek*/
+@media (min-width:768px) {
+    /*Manuel responsive css yazma*/
+    .bus-seat {
+        width: 50px;
+        height: 50px;
+        border: 2px solid gray;
+        display: inline-block;
+        margin: 2px;
+        font-size: 20px;
+    }
+}
+
+.bus-seat.sold{
+    background-color:red;
+    cursor:default; !important;
+}
+.bus-seat.empty {
+    background-color:forestgreen;
+}
+.bus-seat.selected{
+    background-color:darkblue;
+    color:white;
+}

@@ -1,0 +1,74 @@
+﻿@model IEnumerable<VehicleDefinitionSummary>
+<h1>Tüm Modeller</h1>
+
+<div class="row">
+    <div class="col-12 col-sm-10 col-md-12">
+        @if (TempData.ContainsKey("SuccessMessage"))
+        {
+            @MessageHelper.DisplaySuccess(TempData.GetSuccessMessage());
+        }
+        @if (TempData["ErrorMessage"] != null)
+        {
+            @MessageHelper.DisplayError(TempData.GetErrorMessage());
+        }
+        <div class="float-end">
+            <a class="btn btn-outline-primary btn-sm" asp-controller="VehicleDefinitions" asp-action="Create">Yeni Ekle</a>
+        </div>
+
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Marka Adı</th>
+                    <th>Model Adı</th>
+                    <th>Yılı</th>
+                    <th>Koltuk Tipi</th>
+                    <th>Koltuk Sıra Sayısı</th>
+                    <th>Yakıt Tipi</th>
+                    <th>Özellikler</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var vehicleDefinition in Model)
+                {
+                    <tr>
+                        <td>@vehicleDefinition.Id</td>
+                        <td>@vehicleDefinition.VehicleMakeName</td>
+                        <td>@vehicleDefinition.VehicleModelName</td>
+                        <td>@vehicleDefinition.Year</td>
+                        <td>@vehicleDefinition.SeatingTypeName</td>
+                        <td>@vehicleDefinition.LineCount</td>
+                        <td>@vehicleDefinition.FuelTypeName</td>
+                        <td>@vehicleDefinition.UtilitiesName</td>
+                        <td class="text-end">
+                            <a class="btn btn-outline-primary btn-sm" asp-controller="VehicleDefinitions" asp-action="Update" asp-route-id=@vehicleDefinition.Id>Düzenle</a>
+                            <form asp-action="Delete" method="post" class="delete-form d-inline-block">
+                                <input type="hidden" value="@vehicleDefinition.Id" name="id">
+                                <button class="btn btn-outline-warning btn-sm">Sil</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@*
+    section demek _layoutta razor bloğunu yazdığımız RenderBody gibi scriptler için olan RenderSection metodu ile o alana yazarız
+    section yanındaki Scripts ise Rendersectiondaki ilk parametre ile aynı olmak zorunda
+*@
+@section Scripts{
+    <script>
+        let deleteForms = document.getElementsByClassName('delete-form');
+        for (let i = 0; i < deleteForms.length; i++) {
+            deleteForms[i].addEventListener('submit', function (e) {
+                let isConfirmed = confirm('Dikkat !! Bu kayıt silinecek. Devam etmek istiyor musunuz ?');
+                if (!isConfirmed) {
+                    e.preventDefault();
+                }
+            });
+        }
+    </script>
+}

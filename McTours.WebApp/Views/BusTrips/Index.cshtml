@@ -1,0 +1,73 @@
+﻿@model IEnumerable<BusTripSummary>
+<h1>Tüm Seferler</h1>
+
+<div class="row">
+    <div class="col-12">
+        @if (TempData.ContainsKey("SuccessMessage"))
+        {
+            @MessageHelper.DisplaySuccess(TempData.GetSuccessMessage());
+        }
+        @if (TempData["ErrorMessage"] != null)
+        {
+            @MessageHelper.DisplayError(TempData.GetErrorMessage());
+        }
+        <div class="float-end">
+            <a class="btn btn-outline-primary btn-sm" asp-controller="BusTrips" asp-action="Create">Yeni Ekle</a>
+        </div>
+
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Sefer Araç Bilgisi</th>
+                    <th>Kalkış</th>
+                    <th>Varış</th>
+                    <th>Tarih - Saat</th>
+                    <th>Fiyatı(₺)</th>
+                    <th>Süresi(SAAT)</th>
+                    <th>Mola(DK)</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var busTrip in Model)
+                {
+                    <tr>
+                        <td>@busTrip.Id</td>
+                        <td>@busTrip.DisplayVehicleName</td>
+                        <td>@busTrip.DepartureCityName</td>
+                        <td>@busTrip.ArrivalCityName</td>
+                        <td>@busTrip.DisplayDate</td>
+                        <td>@busTrip.TicketPrice.ToString("N2")</td>
+                        <td>@busTrip.EstimatedDuration</td>
+                        <td>@busTrip.BreakTimeDuration</td>
+                        <td class="text-end">
+                            <a class="btn btn-outline-success btn-sm" asp-controller="BusTrips" asp-action="Tickets" asp-route-id=@busTrip.Id>Bilet Oluştur</a>
+                            <a class="btn btn-outline-primary btn-sm" asp-controller="BusTrips" asp-action="Update" asp-route-id=@busTrip.Id>Düzenle</a>
+                            <form asp-action="Delete" method="post" class="delete-form d-inline-block">
+                                <input type="hidden" value="@busTrip.Id" name="id">
+                                <button class="btn btn-outline-warning btn-sm">Sil</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+@section Scripts{
+    <script>
+        let deleteForms = document.getElementsByClassName('delete-form');
+        for (let i = 0; i < deleteForms.length; i++) {
+            deleteForms[i].addEventListener('submit', function (e) {
+                let isConfirmed = confirm('Dikkat !! Bu kayıt silinecek. Devam etmek istiyor musunuz ?');
+                if (!isConfirmed) {
+                    e.preventDefault();
+                }
+            });
+        }
+    </script>
+}
+

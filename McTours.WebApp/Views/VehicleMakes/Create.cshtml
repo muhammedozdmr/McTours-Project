@@ -1,0 +1,51 @@
+﻿<h1>Yeni Araç Markası</h1>
+<div action="row">
+    <div class="col-12 col-sm-10 col-md-8 col-lg-6">
+        @*<form action="~/VehicleMakes/CreateConfirmed" method="post"></form>*@
+        @*
+        get: url üzerinde kayıt yada sorgunun açık bir şekilde yazılması
+        post: url üzerinden verinin sorgusunun gizli kalması
+        get, filtreleme gibi google search gibi sorgularda kullanılabilir
+        post ise crud işlemlerinde yapılması gerekir
+        *@
+        @*    @if (TempData.ContainsKey("ResultMessage"))
+        {
+        <div class="alert alert-danger">
+        @TempData["ResultMessage"]
+        </div>
+        }*@
+        @if (ViewData.ContainsKey("ResultMessage"))
+        {
+            <div class="alert alert-danger">
+                @ViewData["ResultMessage"]
+            </div>
+        }
+      @*  @if (ViewBag.ResultMessage != null)
+        {
+            <div class="alert alert-danger">
+                @ViewData["ResultMessage"]
+                @ViewBag.ResultMessage
+            </div>
+        }*@
+        @*<form asp-controller="VehicleMakes" asp-action="CreateConfirmed" method="post"></form>*@
+        <!--
+            form elementine action bildirmezseniz, action (yani URL değeri) otomatik olarak
+            mevcut sayfanın URL'i olarak kabul edilir.
+            Ancak yine de action değerini her zaman yazmakta fayda vardır.
+        -->
+        <form asp-controller="VehicleMakes" asp-action="Create" method="post">
+            <div class="mb-3">
+                <label for="name" class="form-label">Marka Adı:</label>
+                <input type="text" id="name" name="name" class="form-control" />
+            </div>
+            <div class="mb-3">
+                <div class="float-end">
+                    <a class="btn btn-outline-warning" asp-action="Index">İptal</a>
+                    <button class="btn btn-outline-success">
+                        Kaydet
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

@@ -1,0 +1,62 @@
+﻿@model VehicleModelDto
+<h1>Araç Marka ve Model Güncelleme</h1>
+<div action="row">
+    <div class="col-12 col-sm-10 col-md-8 col-lg-6">
+        @if (TempData.ContainsKey("SuccessMessage"))
+        {
+            <div class="alert alert-success">
+                @TempData["SuccessMessage"]
+            </div>
+        }
+       @if (ViewData.ContainsKey("ErrorMessage"))
+        {
+            @MessageHelper.DisplayError((string)ViewData["ErrorMessage"]);
+        }
+        <form asp-controller="VehicleModels" asp-action="Update" method="post">
+            <div class="mb-3">
+                <label for="name" class="form-label">Marka Adı:</label>
+                @*
+                    asp ile foreach kullanmadan iterasyonu kendi yapıyor asp-items SelectListItem koleksiyonu alıyor
+                    bu şekilde iterasyonu yapıyor kendisi
+                *@
+                <select asp-for="VehicleMakeId" asp-items="ViewBag.VehicleMakes" class="form-select">
+                    <option>.:: Lütfen Seçiniz ::.</option>
+                </select>
+               @* <select id="vehicle_make_id" name="vehicleMakeId" class="form-select">
+                    <option value="">.:: Lütfen Seçiniz ::..</option>
+                    @foreach (VehicleMakeDto vehicleMake in ViewBag.VehicleMakes)
+                    {
+                        if (Model?.VehicleMakeId == vehicleMake.Id)
+                        {
+                            <option value="@vehicleMake.Id" selected>@vehicleMake.Name</option>
+                        }
+                        else
+                        {
+                            <option value="@vehicleMake.Id">@vehicleMake.Name</option>
+                        }
+                    }
+                </select>*@
+            </div>
+              <div class="mb-3">
+                @*<label for="name" class="form-label">Model Adı:</label>*@
+                <label asp-for="Name" class="form-label">Model Adı:</label>
+                @*<input type="text" id="name" name="name" class="form-control" value="@Model.Name" />*@
+                @*
+                    yukarıdaki ile aynı bu beni name,id,type yazmaktan kurtarıyor kendisi sunucuya otomatik post ediyor
+                    sadece classı, readonly ve diğer mecburi olmayan attributeları mecbur girmem gerekiyor7
+                    type'ı eğer belirtmeseydim text olarak alırdı
+                *@
+
+                <input asp-for="Name" type="text" class="form-contol"/>
+            </div
+            <div class="mb-3">
+                <div class="float-end">
+                    <a class="btn btn-outline-warning" asp-action="Index">İptal</a>
+                    <button class="btn btn-outline-success">
+                        Güncelle
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

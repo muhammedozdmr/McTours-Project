@@ -1,0 +1,119 @@
+﻿<h1>Ajax Örnekleri</h1>
+<hr />
+<div class="row">
+    <h2>Ajax ile Dümdüz Text Cevap Almak</h2>
+    <div class="col-6">
+        <button id="btn01">Oyuncu adını getir</button>
+    </div>
+    <div class="col-6">
+        <p id="prg01">
+
+        </p>
+    </div>
+</div>
+<div class="row">
+    <h2>Ajax ile Json Cevap Almak</h2>
+    <div class="col-6">
+        <button id="btn02">Oyuncuları Getir</button>
+    </div>
+    <div class="col-6">
+        <table id="players_table">
+            <thead>
+                <tr>
+                    <th>Adı</th>
+                    <th>Soyadı</th>
+                </tr>
+            </thead>
+            <tbody>
+
+            </tbody>
+        </table>
+    </div>
+</div>
+<hr />
+
+@section Scripts
+    {
+    <script>
+        //Vanilla Js ile JavaScript ile yazılınca böyle yazılıyor çok ilkel biz JQuery ile yazıyoruz
+        //let xmlHttpRequest = new XMLHttpRequest();
+        //xmlHttpRequest.open('url')
+        //xmlHttpRequest.send()
+
+        //Eventhandler ile nasıl yapılır
+        //var button1 = document.getElementById('btn01');
+        //button1.addEventListener('click',function(){});
+
+        //JQuery ile nasıl yapılır ?
+        //JQuery query selector gibi çalışır
+        //let btn01 = JQuery('#btn01');
+        //$ JQuery sembolü
+        let btn01 = $('#btn01');
+        //btn01.click('click',function(){});
+
+        //JQuery, DOM bazlı JavaScript kodlamasını basitleşrtirmek için geliştirilmiş bir JavaScript kütüphanesidir.
+
+        //JQuery ile event handling
+        //btn01.click(function(){alert('Tıklandı')});
+        btn01.click(function () {
+            //bu şekilde bütün sayfa senkron yenilenir ama biz asenkron istiyoruz
+            //window.location='/Ajax/GetPlayerName';
+
+            //asenkron işlem
+            //literal object initialization
+            let ajaxParams = {
+                url: '/Ajax/GetPlayerName',
+                type: 'get',
+                success: function (response) {
+                    //bu şekilde set metodu devreye giriyor parametreli olunca yani içeriği değiştir
+                    $('#prg01').text(response);
+                    //onAjaxSuccess //fonksitonu çağırdım
+                }
+            };
+            $.ajax(ajaxParams);
+
+            //$(document.body).html('');
+            //$(document.body).html('<p></p>')
+
+            //bu şekilde yaptığımda asenkron kodlama olur $.ajax fonksiyonundan sonra responseun dönüp dönmediğini bilemeyiz. o yüzden bunu success içerisinde
+            //yazmalıyım öyle yazarsam senkron sıralı kod akışı olur.
+            //let paragraphText = $("#prg01").text(); //get olarak iş yapar nesneyi okur.
+            //console.log('Paragrafın metni: ',paragraphText);
+
+            //function onAjaxSuccess(response){
+            //    $('#prg01').text(response)
+            //}
+        });
+    </script>
+    <script>
+        $('#btn02').click(function(){
+            $.ajax({
+                //axios araştır
+                url:'/Ajax/getPlayerNames',
+                type: 'get', 
+                dataType: 'json', //birşey yazmazsam text olarak kabul eder
+                success: function(players){
+                    for(var i=0;i<players.length; i++){
+                        //tbody id verilerek salt JavaScript ile böyle yazılır
+                        //let tableRow = document.createElement('tr');
+                        //let tableDataFirstName = document.createElement('td');
+                        //tableDataFirstName.textContent = player[i].firstName;
+
+                        //tr.appendChild(tableDataFirstName);
+                        let tr = $('<tr>')//tr oluşturuldu <> kullanmazsan bütün trleri bul oku getir demek
+                        let tdFirstName = $('<td>')
+                        tdFirstName.text(players[i].firstName); //firstName databasedeki entity property ismi fakat JavaScriptte camelCase olarak yazılıyor otomatik çevriliyor.
+
+                        let tdLastName = $(`<td>${players[i].lastName}</td>`);
+                        tr.append(tdFirstName).append(tdLastName);
+                        $('#players_table > tbody').append(tr);
+                    }
+                    $('#players_table').addClass('table table-striped');
+                }
+                //success: fuction(response){
+                //    console.log(response);
+                //}
+            })
+        });
+    </script>
+}

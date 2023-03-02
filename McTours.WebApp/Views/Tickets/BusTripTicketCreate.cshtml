@@ -1,0 +1,32 @@
+﻿@model TicketReview
+<h4>Bilet Bilgileri</h4>
+<div class="row">
+    <div class="col-12">
+        <form id="ticket_save_form" asp-controller="Tickets" asp-action="Create">
+            <input type="hidden" asp-for="BusTripId" />
+            <input type="hidden" asp-for="PassengerId" />
+            <div class="mb-3">
+                <label asp-for="PassengerFirstName">Yolcu Adı</label>
+                <input asp-for="PassengerFirstName" class="form-control" readonly />
+            </div>
+            <div class="mb-3">
+                <label asp-for="PassengerLastName">Yolcu Soyadı</label>
+                <input asp-for="PassengerLastName" class="form-control" readonly />
+            </div>
+            <div class="mb-3">
+                <label asp-for="SeatNumber">Koltuk Numarası</label>
+                <input asp-for="SeatNumber" class="form-control" readonly />
+            </div>
+            <div class="mb-3">
+                <label asp-for="Price">Bilet Fiyatı</label>
+                <input asp-for="Price" class="form-control" readonly />
+            </div>
+            <div class="mb-3 text-end">
+                <button type="submit" class="btn btn-success" form="ticket_save_form">Bileti Kaydet</button> @*ajax yapsaydık type button olacaktı ajax yapmadık artık yeteer
+                    type submit için yazmasaydım da submit yapardı. Eğer iç içe formlar varsa hangi buttonun hangi formu submit edeceğini söylemek için
+                    form="" attributene hangi formsa onun id sini yazmam gerekir.
+                *@
+            </div>
+        </form>
+    </div>
+</div>

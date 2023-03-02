@@ -1,0 +1,55 @@
+﻿@model BusTripSeatsModel
+
+@*bunu importta da yazabilirdik ortak biyerde olsun diye metodlaştırdık*@
+@functions {
+    public HtmlString GetBusSeatClass(ICollection<int> soldSeatNumbers, int seatNumber)
+    {
+        if (soldSeatNumbers.Contains(seatNumber))
+        {
+            return new HtmlString("btn bus-seat sold");
+        }
+        else
+        {
+            return new HtmlString("btn bus-seat empty");
+        }
+    }
+}
+
+<div id="bus_seatings">
+    @{
+        var seatNumber = 0;
+        for (int i = 0; i < Model.BusSeatingLineCount; i++)
+        {
+            if (Model.BusSeatingType == SeatingType.Normal)
+            {
+                @*data attribute ile aynı asp de route ile aynı kullanım tarzına denk geliyor amaç elementlere verdiğin gizli değerler
+    data-seat-number da seat-number kısmına kendimiz isim verdik. Kod soldan sağa okunacağı için ilk önce seatNumberı arttırdık görüntüye aynısını
+    yazdırdık. data-seat-number ile koltuk numarasını tutmuş olacağız onclick ile de olabilirdi ama bu sefer okuma kısmını passengerId de dahil olmak üzere
+    daha farklı okumam gerekecektir.*@
+                //<div id="btn@(++i)" class="bus-seat btn" data-seat-number="@(++seatNumber)">@seatNumber</div>
+                <div id="btn@(++i)" class="@GetBusSeatClass(Model.SoldSeatNumbers,++seatNumber)" data-seat-number="@(seatNumber)">@seatNumber</div>
+                <div class="@GetBusSeatClass(Model.SoldSeatNumbers,++seatNumber) me-4" data-seat-number="@(seatNumber)">@seatNumber</div>
+
+                <div class="@GetBusSeatClass(Model.SoldSeatNumbers,++seatNumber)" data-seat-number="@(seatNumber)">@seatNumber</div>
+                <div class="@GetBusSeatClass(Model.SoldSeatNumbers,++seatNumber)" data-seat-number="@(seatNumber)">@seatNumber</div>
+                <br />
+            }
+            else if (Model.BusSeatingType == SeatingType.Single)
+            {
+                @*Event handler metodu aşağıdaki gibi inline(onclick attribute değeri olarak) tanımlanabilir*@
+                <div id="@seatNumber" onclick="seatClick(this.id)" class="@GetBusSeatClass(Model.SoldSeatNumbers,++seatNumber) me-4" data-seat-number="@(seatNumber)">@seatNumber</div>
+
+                <div class="@GetBusSeatClass(Model.SoldSeatNumbers,++seatNumber)" data-seat-number="@(seatNumber)">@seatNumber</div>
+                <div class="@GetBusSeatClass(Model.SoldSeatNumbers,++seatNumber)" data-seat-number="@(seatNumber)">@seatNumber</div>
+                <br />
+            }
+            else if (Model.BusSeatingType == SeatingType.Vip)
+            {
+                <div class="@GetBusSeatClass(Model.SoldSeatNumbers,++seatNumber) me-4" data-seat-number="@(seatNumber)">@seatNumber</div>
+                            
+                <div class="@GetBusSeatClass(Model.SoldSeatNumbers,++seatNumber)" data-seat-number="@(seatNumber)">@seatNumber</div>
+                <br />
+            }
+        }
+    }
+</div>

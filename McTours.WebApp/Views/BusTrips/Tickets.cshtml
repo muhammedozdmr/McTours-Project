@@ -1,0 +1,247 @@
+﻿@model BusTripTicketSummary
+<h1>
+    @Model.Name
+    <br />
+    <small>
+        @Model.VehicleName
+    </small>
+</h1>
+@*Burada for döngüsü ile otobüs koltuklarını yazdırdık normal divlere click ekleyebiliyoruz fakat biz yinede daha hoş görünmesi için divlere btn classı verdik.
+    Burada for otobüsün koltuk sırasına göre yazıldı istersen otobüsteki toplam koltuk numarasına göre de yapabililirdik. mantık aynı koltuk sırası * koltuk tipi
+    Koltukları tamamnını buton olarak dizayn edebilirdik ama div ile boyama işlemleri daha rahat olur diye düşünüyoruz. Tabikide style kısmı css tarafında yazıldı.
+    Özellikle frontend kısımlarına iyi çalış
+*@
+<div class="row me-5">
+    <div id="panel1" class="col-12 col-sm-5 col-md-4 col-lg-3">
+        @await Component.InvokeAsync("BusTripSeats",new {id = Model.Id})
+        @*aşağıdaki cshtml BusTripSeatsViewComponent içerisine yazıldı*@
+       @* <div id="bus_seatings">
+            @{
+                var seatNumber = 0;
+                for (int i = 0; i < Model.BusSeatingLineCount; i++)
+                {
+                    if (Model.BusSeatingType == SeatingType.Normal)
+                    {
+                        @*data attribute ile aynı asp de route ile aynı kullanım tarzına denk geliyor amaç elementlere verdiğin gizli değerler
+            data-seat-number da seat-number kısmına kendimiz isim verdik. Kod soldan sağa okunacağı için ilk önce seatNumberı arttırdık görüntüye aynısını
+            yazdırdık. data-seat-number ile koltuk numarasını tutmuş olacağız onclick ile de olabilirdi ama bu sefer okuma kısmını passengerId de dahil olmak üzere
+            daha farklı okumam gerekecektir.*@
+                        @*<div id="btn@(++i)" class="bus-seat btn" data-seat-number="@(++seatNumber)">@seatNumber</div>
+                        <div class="bus-seat btn me-4" data-seat-number="@(++seatNumber)">@seatNumber</div>
+
+                        <div class="bus-seat btn" data-seat-number="@(++seatNumber)">@seatNumber</div>
+                        <div class="bus-seat btn" data-seat-number="@(++seatNumber)">@seatNumber</div>
+                        <br />
+                    }
+                    else if (Model.BusSeatingType == SeatingType.Single)
+                    {*@
+                        @*Event handler metodu aşağıdaki gibi inline(onclick attribute değeri olarak) tanımlanabilir*@
+                        @*<div id="@seatNumber" onclick="seatClick(this.id)" class="bus-seat btn me-4" data-seat-number="@(++seatNumber)">@seatNumber</div>
+
+                        <div class="bus-seat btn" data-seat-number="@(++seatNumber)">@seatNumber</div>
+                        <div class="bus-seat btn" data-seat-number="@(++seatNumber)">@seatNumber</div>
+                        <br />
+                    }
+                    else if (Model.BusSeatingType == SeatingType.Vip)
+                    {
+                        <div class="bus-seat btn me-4" data-seat-number="@(++seatNumber)">@seatNumber</div>
+
+                        <div class="bus-seat btn" data-seat-number="@(++seatNumber)">@seatNumber</div>
+                        <br />
+                    }
+                }
+            }
+        </div>*@
+    </div>
+    <div id="panel2" class="col-12 col-sm-7 col-md-8 col-lg-9">
+    </div>
+</div>
+@section Scripts{
+    <script>
+        //vanillajs ile yazarken
+        //var seats = document.getelementsbyclassname("bus-seat");
+        //for(let i = 0; i<seats.length;i++){
+        //    seats[i].addEventListener('click',function(){/*ajax burada*/});
+        //}
+
+        //JQuery de föngüye ihtiyacın yok kendisi 1 tane de olsa 10 tanede olsa koleksiyon döndürür.
+        //var $seats = $('.bus-seat');
+        //$seats.click(function(){});
+
+        //yada
+        var seats = $('.bus-seat');
+        $('.bus-seat.empty').click(function () {
+            $('.bus-seat.selected').removeClass('selected');
+            //this.classList.add('selected');
+            $(this).addClass('selected'); //JQuery syntax ı ile yazımı da bu şekilde.
+            let seatNumber = parseInt(this.dataset.seatNumber) //this elementin kendisini temsil ediyor bu divdeki dataset içerisindeki seat-numberı - ile yazamayacağım için
+            //seatNumber olarak yazıyorum ve dataset içerisindeki seatNumber a eriş ata demek istiyorum. parse işlemi ile string gelen değeri çünkü htmlde hepsi
+            //string geliyor parse ediyorum.
+            $.ajax({
+                //url:'/Passengers/SearchPassengers'
+                //program cs de pattern diyelimki standart sentaksta değil ise razor ile url helperı ile action yardımcı metoduna actionı ve controllerını
+                //otomatik olarak kendisi en düzgün urli getiriyor istediklerim içerisinde bunu böyle yapmakta fayda var
+                //çünkü yarın öbürgün program.cs de pattern değişirse yazdığım büün urller patlamasın diye
+                url: '@Url.Action("SearchPassengers","Passengers")',
+        @*url: '@Url.Action(controller: "Passengers",action:"SearchPassengers")'*@
+                //async: false, diyerek asenkronluğu engellemiş olursun bu şekilde succesten sonra devam etmene gerek kalmaz fakaaat bu şekilde bekletir browserı sonra
+                //ikinci işlemi yükler
+                type: 'get',
+                success: function (response) {
+                    $('#panel2').html(response);//JQuery de htmlnin içine parametre yazarsa set parametresiz çağırırsak get demek
+                    $('#btn-search').click(function () {
+                        console.log("Tıklandı");
+                        $.ajax({
+                            url: '@Url.Action("SearchPassengers","Passengers")',
+                            type: 'post',
+                            //data: {
+                            //    //JS de property isimlerini her iki şekilde de yazılabilir yani string olarak yazaibilirsin yalnızca literal yani tanımlama esanısnda
+                            //    //yoksa person.identityNumber yazarken person.'identityNumber' yazamazsın bu şekilde ancak person['identityNumber'] ile erişebilirsin
+                            //    //çünkü JS dictionary nesnesi gibi davranır key value mantığıyla
+                            //    'identityNumber':$('#IdentityNumber').val(), //inputtan gelen değer
+                            //    firstName: $('#FirstName').val(), //bu şekilde html tarafında elementin idsi ne ise onu yazıyor ve değerini val ile çağırıyoruz
+                            //    //JQuery temel prensibi olan val(içi dolu) ise set demek yani $('#FirstName').val('Tsubasa') dersem o elemente Tsubasa yazar
+                            //    lastName: $('#LastName').val() //lastName benim modelimde property ismim entityde eğer model ismimle aynı olmaz ise problem çıkartır
+                            //    //bu eşleştirmeyi asp değil mvc yapıyor büyük küçük harf duyarlılığı yok
+                            //}
+                            data: $('#search_passengers_form').serialize(), //bu yukarıdaki datayla aynı iş görüyor anlamı form idsini alıp sen bu form içerisinde
+                            //ne kadar input varsa bana modelle getir demek
+                            dataType: 'json',
+                            success: function (searchPassenger) {
+                                $('#search_passengers_table').html(null);
+                                $('#create_passenger_button').remove();//doğrudan elementi yok ediyor.
+                                if (searchPassenger.length) {
+                                    for (let i = 0; i < searchPassenger.length; i++) {
+                                        let passenger = searchPassenger[i];
+                                        let tableRow = $('<tr>');
+                                        let identityNumberCell = $('<td>').text(passenger.identityNumber);
+                                        let firstNameCell = $('<td>').text(passenger.firstName);
+                                        let lastNameCell = $('<td>').text(passenger.lastName);
+                                        let genderCell = $('<td>').text(passenger.genderName);
+
+                                        tableRow.append(identityNumberCell).append(firstNameCell).append(lastNameCell).append(genderCell);
+                                        $('#search_passengers_table').append(tableRow); //eğer search_passengers_table i table id olarak ayarlasaydım
+                                        // $('#search_passengers_table > tbody').append(tableRow);
+                                        //yada  $('#search_passengers_table ').append(tableRow);
+                                        //yazmam gerekirdi eğer > kullanırsam 1 alt elementine gider boşluk bırakırsam bütün alt elementlerine gider
+
+                                        //let passengerRow = $('table tbody tr');
+                                        //passengerRow.click(function () {
+                                        //yada direkt
+                                        tableRow.click(function () {
+                                            $.ajax({
+                                                url: '@Url.Action("BusTripTicketCreate","Tickets")',
+                                                type: 'post',//burayı post yaptık çünkü get ile tekrar tekrar uğraşmak gerekebilir.
+                                                data: { //bu datayı let ile bir değişkende yapabilirdim.
+                                                    busTripId: @Model.Id,
+                                                    passengerId: passenger.id, //firstName gibi JSON a JS otomatik serialize etsin diye
+                                                    seatNumber: seatNumber
+                                                },
+                                                success: function (busTripTicket) {
+                                                    $('#panel2').html(busTripTicket);
+                                                }
+                                            });
+                                        });
+
+                                    }
+                                }
+                                else {
+                                    let tableRow = $('<tr>');
+                                    let emptyCell = $('<td colspan="4">').text('Kayıt bulunamadı !');
+
+                                    tableRow.append(emptyCell);
+                                    $('#search_passengers_table').append(tableRow);
+                                    let newPassengerButton = $('<button>')
+                                        .attr('id', 'create_passenger_button')
+                                        .text('Yeni Ekle')
+                                        .addClass('btn btn-outline-primary');
+
+                                    $('#search_passengers_table').after(newPassengerButton);
+                                    $('#create_passenger_button').click(function () {
+                                        console.log("Yeni kayıt tıklandı");
+                                        $.ajax({
+                                            url: '@Url.Action("CreatePassenger","Passengers")',
+                                            type: 'get',
+                                            success: function (createPassenger) {
+                                                $('#panel2').html(null);
+                                                $('#panel2').html(createPassenger);
+                                                $('#btn-create-passenger').click(function () {
+                                                    console.log("Tıklandı Kaydoldu");
+                                                    $.ajax
+                                                        ({
+                                                            url: '@Url.Action("CreatePAssenger","Passengers")',
+                                                            type: 'post',
+                                                            data: $('#create_passenger_form').serialize(),
+                                                            dataType: 'json',
+                                                            success: function (createPassengerModel) {
+                                                                $('#panel2').html(null);
+                                                                //response en başta yaptığımız search formları getirme ajaxı
+                                                                $('#panel2').html(response);
+                                                                $.ajax
+                                                                    ({
+                                                                        url: '@Url.Action("SearchPassengers","Passengers")',
+                                                                        type: 'post',
+                                                                        data: $('#search_passengers_form').serialize(),
+                                                                        dataType: 'json',
+                                                                        success: function (searchPassenger) {
+                                                                            //$('#search_passengers_table').html(null);
+                                                                            //$('#create_passenger_button').remove();//doğrudan elementi yok ediyor.
+                                                                            if (searchPassenger.length) {
+                                                                                for (let i = 0; i < searchPassenger.length; i++) {
+                                                                                    let passenger = searchPassenger[i];
+                                                                                    let tableRow = $('<tr>');
+                                                                                    let identityNumberCell = $('<td>').text(passenger.identityNumber);
+                                                                                    let firstNameCell = $('<td>').text(passenger.firstName);
+                                                                                    let lastNameCell = $('<td>').text(passenger.lastName);
+                                                                                    let genderCell = $('<td>').text(passenger.genderName);
+
+                                                                                    tableRow.append(identityNumberCell).append(firstNameCell).append(lastNameCell).append(genderCell);
+                                                                                    $('#search_passengers_table').append(tableRow);
+                                                                                }
+                                                                                //tableRow a tekrar eventHandler ekle
+                                                                            }
+                                                                        }
+                                                                    });
+                                                            }
+                                                        })
+                                                });
+                                            }
+                                        });
+                                    });
+                                }
+                                //var passenger = JSON.parse(searchPassenger); //eğer dataType ı belirtmezsem yani JQuery e benim sunucudan ne beklediğimi söylüyorum nesne JSONdır demezsem
+                                //JS bu parametreyi string olarak döndüreceği
+                                //için tekrar içeride parse etmem gerekir. O yüzden en başta dataType belirterek JQuery e bildiriyorum.
+                                //$('#passenger-table').html(response)
+
+                                //JSON nesnesi, JS DOM içerisinde varsayılan, bütünleşik gelen bir global bir nesne
+                                //JSOJN.parse(jsonDeğişken) -> string JSON'ı JS nesnesine dönüştürür
+                                //JSON.stringify(nesneDeğişken) -> JS nesneyi JSON string'e dönüştürür
+
+                                //stringify -> Serialize
+                                //parse -> Deserialize
+                            }
+
+                            //let href = $('#FirstName').attr('href') //burada mesela okuma anlamı taşır çünkü attr metodu 2 parametre alır
+                            //$('#a_elementinin_selector').attr('href','www.google.com') // bu eşkilde ise bu href değerini bununla değiştir tıklanınca o adrese gitsin demek
+                        });
+                    });
+                },
+                //preloader ekranı tasarladığında muhakkak error tarafında da hide etmen gerek ki eğere response alamazsa kullanıcıya hata mesajını döndürebilsin
+                //aksi halde response almasına rağmen hata döndüremez ve uzun süre preloader ekranı bekler kullanıcı
+                error: function (error) {
+                    console.log(error);
+                }
+                         });
+                        });
+        $('.bus-seat.sold').click(function(){
+            @*
+            $.get('@Url.Action("GetTicketInfo","Tickets",new {busTripId:Model.Id})')
+            //ajax ile Tickets controllerdan GetTicketInfo gibi bir metodu çağır
+            //Parametreler BusTriptId, SeatNumber *@
+        })
+
+        //bu da inline metot olarak yazılmış hali
+       //function seatClick(seatNumber){buraya ajax call kodu yazılır.}
+    </script>
+}

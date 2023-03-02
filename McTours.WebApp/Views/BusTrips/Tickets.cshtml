@@ -90,7 +90,6 @@
                 success: function (response) {
                     $('#panel2').html(response);//JQuery de htmlnin içine parametre yazarsa set parametresiz çağırırsak get demek
                     $('#btn-search').click(function () {
-                        console.log("Tıklandı");
                         $.ajax({
                             url: '@Url.Action("SearchPassengers","Passengers")',
                             type: 'post',
@@ -158,7 +157,6 @@
 
                                     $('#search_passengers_table').after(newPassengerButton);
                                     $('#create_passenger_button').click(function () {
-                                        console.log("Yeni kayıt tıklandı");
                                         $.ajax({
                                             url: '@Url.Action("CreatePassenger","Passengers")',
                                             type: 'get',
@@ -166,7 +164,6 @@
                                                 $('#panel2').html(null);
                                                 $('#panel2').html(createPassenger);
                                                 $('#btn-create-passenger').click(function () {
-                                                    console.log("Tıklandı Kaydoldu");
                                                     $.ajax
                                                         ({
                                                             url: '@Url.Action("CreatePAssenger","Passengers")',
